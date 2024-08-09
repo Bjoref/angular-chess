@@ -1,0 +1,25 @@
+<div class="chess-board">
+  <div *ngFor="let row of rows; let i = index" class="row">
+    <div
+      *ngFor="let col of cols; let j = index"
+      class="cell"
+      [ngClass]="{
+        'cell_white': (i + j) % 2 === 0,
+        'cell_black': (i + j) % 2 !== 0,
+        'cell_highlight': isHighlighted(i, j),
+        'cell_capture': isCapture(i, j)
+      }"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event, i, j)"
+    >
+      <ng-container *ngIf="boardState$ | async as boardState">
+        <app-chess-piece
+          *ngIf="boardState[i][j]"
+          [piece]="boardState[i][j]!"
+          draggable="true"
+          (dragstart)="onDragStart($event, i, j)"
+        ></app-chess-piece>
+      </ng-container>
+    </div>
+  </div>
+</div>
