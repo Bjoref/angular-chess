@@ -71,33 +71,39 @@ export class ChessBoardService {
     return this.chessRulesService.getValidMoves(piece, row, col, this.getBoardState());
   }
 
+  isWhiteTurn(): boolean {
+    return this.whiteTurn;
+  }
+
   onDragStart(row: number, col: number, event: DragEvent) {
     const board = this.getBoardState();
     const piece = board[row][col];
 
-    if (piece && ((this.whiteTurn && piece.color === 'white') || (!this.whiteTurn && piece.color === 'black'))) {
-      this.draggedPiece = { piece, from: { row, col } };
+    // Если это не ход текущего игрока, предотвращаем перетаскивание
+    if (!piece || (this.whiteTurn && piece.color !== 'white') || (!this.whiteTurn && piece.color !== 'black')) {
+        event.preventDefault();
+        return;
+    }
 
-      const target = event.target as HTMLElement;
-      const dragImage = target.cloneNode(true) as HTMLElement;
+    this.draggedPiece = { piece, from: { row, col } };
 
-      dragImage.style.position = 'absolute';
-      dragImage.style.top = '-9999px';
-      document.body.appendChild(dragImage);
+    const target = event.target as HTMLElement;
+    const dragImage = target.cloneNode(true) as HTMLElement;
 
-      event.dataTransfer?.setDragImage(
+    dragImage.style.position = 'absolute';
+    dragImage.style.top = '-9999px';
+    document.body.appendChild(dragImage);
+
+    event.dataTransfer?.setDragImage(
         dragImage,
         target.clientWidth / 2,
         target.clientHeight / 2
-      );
+    );
 
-      setTimeout(() => {
+    setTimeout(() => {
         document.body.removeChild(dragImage);
-      }, 0);
-    } else {
-      event.preventDefault();
-    }
-  }
+    }, 0);
+}
 
   onDrop(row: number, col: number) {
     if (this.draggedPiece) {
