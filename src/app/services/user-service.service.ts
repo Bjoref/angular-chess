@@ -6,10 +6,14 @@ import { User } from '../models/user';
   providedIn: 'root',
 })
 export class UserService {
-  private userSource = new BehaviorSubject<User | null>(null);
-  currentUser$ = this.userSource.asObservable();
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
 
   setUser(user: User) {
-    this.userSource.next(user);
+    this.currentUserSubject.next(user);
+  }
+
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.getValue();
   }
 }

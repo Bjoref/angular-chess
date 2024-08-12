@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { ChessBoardComponent } from './components/chess-board/chess-board.component';
 import { User } from './models/user';
 import { UserService } from './services/user-service.service';
@@ -17,7 +17,7 @@ export class AppComponent implements OnInit, OnDestroy {
   user: User | null = null;
   title = 'chess-app';
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit() {
     this.userService.currentUser$
@@ -27,6 +27,15 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log('User ID:', user?.id);
         console.log('User Nickname:', user?.name);
         console.log('User Side:', user?.side);
+      });
+
+    this.userService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.user = user;
+        if (!user) {
+          this.router.navigate(['/']); 
+        }
       });
   }
 
