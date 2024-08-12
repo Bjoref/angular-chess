@@ -5,36 +5,57 @@
 
 .chess-board {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
-.row {
-  display: flex;
-}
+  &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-.cell {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  &__row {
+    display: flex;
+  }
 
-.cell_white {
-  background-color: #f0d9b5;
-}
+  &__cell {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-.cell_black {
-  background-color: #b58863;
-}
+    &_white {
+      background-color: #f0d9b5;
+    }
 
-.cell_highlight {
-  outline-offset: -5px;
-  outline: 2px solid green;
-}
+    &_black {
+      background-color: #b58863;
+    }
 
-.cell_capture {
-  outline-offset: -5px;
-  outline: 2px solid red;
+    &_highlight {
+      outline-offset: -5px;
+      outline: 2px solid green;
+    }
+
+    &_capture {
+      outline-offset: -5px;
+      outline: 2px solid red;
+    }
+  }
+
+  &__label {
+    display: flex;
+    height: 50px;
+
+    &_bottom {
+      display: flex;
+    }
+
+    &-chars {
+      width: 50px;
+    }
+
+    &-numbers {
+      height: 50px;
+    }
+  }
 }

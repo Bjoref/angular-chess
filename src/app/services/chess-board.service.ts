@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import {
   ChessPiece,
@@ -67,8 +67,17 @@ export class ChessBoardService {
     return this.boardStateSubject.getValue();
   }
 
-  getValidMoves(piece: ChessPiece, row: number, col: number): { row: number, col: number }[] {
-    return this.chessRulesService.getValidMoves(piece, row, col, this.getBoardState());
+  getValidMoves(
+    piece: ChessPiece,
+    row: number,
+    col: number
+  ): { row: number; col: number }[] {
+    return this.chessRulesService.getValidMoves(
+      piece,
+      row,
+      col,
+      this.getBoardState()
+    );
   }
 
   isWhiteTurn(): boolean {
@@ -80,9 +89,13 @@ export class ChessBoardService {
     const piece = board[row][col];
 
     // Если это не ход текущего игрока, предотвращаем перетаскивание
-    if (!piece || (this.whiteTurn && piece.color !== 'white') || (!this.whiteTurn && piece.color !== 'black')) {
-        event.preventDefault();
-        return;
+    if (
+      !piece ||
+      (this.whiteTurn && piece.color !== 'white') ||
+      (!this.whiteTurn && piece.color !== 'black')
+    ) {
+      event.preventDefault();
+      return;
     }
 
     this.draggedPiece = { piece, from: { row, col } };
@@ -95,15 +108,15 @@ export class ChessBoardService {
     document.body.appendChild(dragImage);
 
     event.dataTransfer?.setDragImage(
-        dragImage,
-        target.clientWidth / 2,
-        target.clientHeight / 2
+      dragImage,
+      target.clientWidth / 2,
+      target.clientHeight / 2
     );
 
     setTimeout(() => {
-        document.body.removeChild(dragImage);
+      document.body.removeChild(dragImage);
     }, 0);
-}
+  }
 
   onDrop(row: number, col: number) {
     if (this.draggedPiece) {
@@ -111,15 +124,32 @@ export class ChessBoardService {
       const { piece, from } = this.draggedPiece;
 
       const validMoves = this.getValidMoves(piece, from.row, from.col);
-      const isValidMove = validMoves.some(move => move.row === row && move.col === col);
+      const isValidMove = validMoves.some(
+        (move) => move.row === row && move.col === col
+      );
 
       if (isValidMove) {
+        const targetPiece = board[row][col]; // Получаем фигуру на целевой клетке
+
+        // Если на целевой клетке есть фигура и она вражеская
+        const audio = targetPiece
+          ? new Audio('assets/sounds/capture.mp3')
+          : new Audio('assets/sounds/move.mp3');
+
+        // Срубаем вражескую фигуру
+        if (targetPiece && targetPiece.color !== piece.color) {
+          board[row][col] = null; // Сначала удаляем вражескую фигуру
+        }
+
+        // Перемещаем нашу фигуру на новую позицию
         board[from.row][from.col] = null;
         piece.position = { row, col };
         board[row][col] = piece;
 
         this.boardStateSubject.next(board);
         this.whiteTurn = !this.whiteTurn; // Меняем ход после успешного хода
+
+        audio.play(); // Проигрываем звук
       }
 
       this.draggedPiece = null;

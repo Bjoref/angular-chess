@@ -2,28 +2,38 @@
   Ходит: <strong>{{ currentPlayer }}</strong>
 </div>
 
+
 <div class="chess-board">
-  <div *ngFor="let row of rows; let i = index" class="row">
-    <div
-      *ngFor="let col of cols; let j = index"
-      class="cell"
-      [ngClass]="{
-        'cell_white': (i + j) % 2 === 0,
-        'cell_black': (i + j) % 2 !== 0,
-        'cell_highlight': isHighlighted(i, j),
-        'cell_capture': isCapture(i, j)
-      }"
-      (dragover)="onDragOver($event)"
-      (drop)="onDrop($event, i, j)"
-    >
-      <ng-container *ngIf="boardState$ | async as boardState">
-        <app-chess-piece
-          *ngIf="boardState[i][j]"
-          [piece]="boardState[i][j]!"
-          draggable="true"
-          (dragstart)="onDragStart($event, i, j)"
-        ></app-chess-piece>
-      </ng-container>
+  <div class="chess-board__label_left">
+    <div *ngFor="let row of rows; let i = index" class="chess-board__label-numbers">{{ 8 - i }}</div>
+  </div>
+  <div class="chess-board__container">
+    <div *ngFor="let row of rows; let i = index" class="chess-board__row">
+      <div
+        *ngFor="let col of cols; let j = index"
+        class="chess-board__cell"
+        [ngClass]="{
+          'chess-board__cell_white': (i + j) % 2 === 0,
+          'chess-board__cell_black': (i + j) % 2 !== 0,
+          'chess-board__cell_highlight': isHighlighted(i, j),
+          'chess-board__cell_capture': isCapture(i, j)
+        }"
+        (dragover)="onDragOver($event)"
+        (drop)="onDrop($event, i, j)"
+      >
+        <ng-container *ngIf="boardState$ | async as boardState">
+          <app-chess-piece
+            *ngIf="boardState[i][j]"
+            [piece]="boardState[i][j]!"
+            draggable="true"
+            (dragstart)="onDragStart($event, i, j)"
+          ></app-chess-piece>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="chess-board__label_bottom">
+      <div *ngFor="let col of cols; let j = index" class="chess-board__label-chars">{{ 'abcdefgh'[j] }}</div>
     </div>
   </div>
 </div>

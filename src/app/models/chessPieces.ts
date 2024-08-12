@@ -10,35 +10,53 @@ export interface ChessPiece {
 //Пешка
 export class Pawn implements ChessPiece {
   type = 'pawn';
-  constructor(public color: 'white' | 'black', public position: { row: number; col: number }) {}
+  constructor(
+    public color: 'white' | 'black',
+    public position: { row: number; col: number }
+  ) {}
 }
 
 //Ладья
 export class Rook implements ChessPiece {
   type = 'rook';
-  constructor(public color: 'white' | 'black', public position: { row: number; col: number }) {}
+  constructor(
+    public color: 'white' | 'black',
+    public position: { row: number; col: number }
+  ) {}
 }
 
 //Конь
 export class Knight implements ChessPiece {
   type = 'knight';
-  constructor(public color: 'white' | 'black', public position: { row: number; col: number }) {}
+  constructor(
+    public color: 'white' | 'black',
+    public position: { row: number; col: number }
+  ) {}
 }
 
 //Слон
 export class Bishop implements ChessPiece {
   type = 'bishop';
-  constructor(public color: 'white' | 'black', public position: { row: number; col: number }) {}
+  constructor(
+    public color: 'white' | 'black',
+    public position: { row: number; col: number }
+  ) {}
 }
 
 //Королева
 export class Queen implements ChessPiece {
   type = 'queen';
-  constructor(public color: 'white' | 'black', public position: { row: number; col: number }) {}
+  constructor(
+    public color: 'white' | 'black',
+    public position: { row: number; col: number }
+  ) {}
 }
 
-//Король 
+//Король
 export class King implements ChessPiece {
   type = 'king';
-  constructor(public color: 'white' | 'black', public position: { row: number; col: number }) {}
+  constructor(
+    public color: 'white' | 'black',
+    public position: { row: number; col: number }
+  ) {}
 }
