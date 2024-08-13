@@ -7,11 +7,15 @@ import { Observable } from 'rxjs';
 })
 export class ChessHttpService {
   http = inject(HttpClient);
-  private apiUrl = ' http://localhost:5140/api/';
+  private apiUrl = 'http://localhost:5140/api/';
 
   constructor() {}
 
-  startNewGame(): Observable<any> {
-    return this.http.get(`${this.apiUrl}Queue/Register?playerToken=${1}`);
+  startNewGame(id: string): Observable<string> {
+    return this.http.get(`${this.apiUrl}Queue/Register?playerToken=${id}`, { responseType: 'text' });
+  }
+
+  getUserInQueue(id: string, guid: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}Queue/GetStatus?playerToken=${id}&guid=${guid}`);
   }
 }

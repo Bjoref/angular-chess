@@ -4,31 +4,23 @@ import { ChessBoardComponent } from './components/chess-board/chess-board.compon
 import { User } from './models/user';
 import { UserService } from './services/user-service.service';
 import { Subject, takeUntil } from 'rxjs';
+import { ChessHttpService } from './services/chess-http.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, ChessBoardComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   user: User | null = null;
   title = 'chess-app';
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private userService: UserService, private router: Router, private httpService: ChessHttpService) {}
 
   ngOnInit() {
-    this.userService.currentUser$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
-        this.user = user;
-        console.log('User ID:', user?.id);
-        console.log('User Nickname:', user?.name);
-        console.log('User Side:', user?.side);
-      });
-
     this.userService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
@@ -37,6 +29,11 @@ export class AppComponent implements OnInit, OnDestroy {
           this.router.navigate(['/']); 
         }
       });
+  }
+
+  navigateToMenu() {
+    this.userService.setUser(this.user!);
+    this.router.navigate(['/menu']);
   }
 
   ngOnDestroy() {
