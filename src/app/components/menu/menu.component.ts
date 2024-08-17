@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from '../services/user-service.service';
-import { User } from '../models/user';
+import { UserService } from '../../services/user-service.service';
+import { User } from '../../models/user';
 import { Subject, takeUntil } from 'rxjs';
-import { ChessHttpService } from '../services/chess-http.service';
+import { ChessHttpService } from '../../services/chess-http.service';
 
 @Component({
   selector: 'app-menu',
@@ -33,18 +33,17 @@ export class MenuComponent implements OnInit, OnDestroy {
     if (this.user) {
       const id = this.user.id;
       this.chessHttpService
-        .startNewGame(id)
+        .registerUser(id)
         .pipe(takeUntil(this.destroy$))
         .subscribe(
-          (response) => {
-            console.log('Game started:', response);
-            this.getUserQueueStatus(id, response);
-            // this.router.navigate(['/game']);
+          (guid) => {
+            console.log('Game started with GUID:', guid);
+            this.userService.updateUserGuid(guid); // Обновляем guid пользователя в сервисе
+            this.getUserQueueStatus(id, guid);
+            this.router.navigate(['/game']);
           },
           (error) => {
             console.error('Error starting game:', error);
-            // Обработка ошибки (например, показ уведомления)
-            alert('Failed to start the game. Please try again later.');
           }
         );
     } else {
@@ -55,11 +54,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private getUserQueueStatus(id: string, guid: string): void {
     this.chessHttpService.getUserInQueue(id, guid)
     . pipe(takeUntil(this.destroy$))
-    .subscribe(
-      (responseOne => {
-        console.log(responseOne)
-      })
-    )
+    .subscribe();
   }
 
   ngOnDestroy() {

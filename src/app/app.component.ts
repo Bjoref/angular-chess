@@ -16,6 +16,8 @@ import { ChessHttpService } from './services/chess-http.service';
 export class AppComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   user: User | null = null;
+  userId: string | null = null;
+
   title = 'chess-app';
 
   constructor(private userService: UserService, private router: Router, private httpService: ChessHttpService) {}
@@ -29,6 +31,11 @@ export class AppComponent implements OnInit, OnDestroy {
           this.router.navigate(['/']); 
         }
       });
+  }
+
+  receiveData(data: string) {
+    this.userId = data;
+    console.log(this.userId)
   }
 
   navigateToMenu() {

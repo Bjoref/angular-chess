@@ -11,11 +11,15 @@ export class ChessHttpService {
 
   constructor() {}
 
-  startNewGame(id: string): Observable<string> {
+  registerUser(id: string): Observable<string> {
     return this.http.get(`${this.apiUrl}Queue/Register?playerToken=${id}`, { responseType: 'text' });
   }
 
-  getUserInQueue(id: string, guid: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}Queue/GetStatus?playerToken=${id}&guid=${guid}`);
+  getUserInQueue(id: string, guid: string): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}Queue/GetStatus?playerToken=${id}&guid=${guid}`);
+  }
+
+  getGameInfo(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}Game/GetInfo?gameId=${id}`);
   }
 }
