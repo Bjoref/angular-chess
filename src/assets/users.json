@@ -2,11 +2,11 @@
     {
         "id": "1",
         "name": "user1",
-        "side": "white"
+        "side": "black"
     },
     {
         "id": "2",
         "name": "user2",
-        "side": "black"
+        "side": "white"
     }
 ]

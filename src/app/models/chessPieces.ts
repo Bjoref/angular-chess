@@ -60,3 +60,23 @@ export class King implements ChessPiece {
     public position: { row: number; col: number }
   ) {}
 }
+
+export class ChessPieceFactory {
+  static createPieceFromAscii(char: string, position: { row: number; col: number }): ChessPiece | null {
+    switch (char) {
+      case 'P': return new Pawn('white', position);
+      case 'p': return new Pawn('black', position);
+      case 'R': return new Rook('white', position);
+      case 'r': return new Rook('black', position);
+      case 'N': return new Knight('white', position);
+      case 'n': return new Knight('black', position);
+      case 'B': return new Bishop('white', position);
+      case 'b': return new Bishop('black', position);
+      case 'Q': return new Queen('white', position);
+      case 'q': return new Queen('black', position);
+      case 'K': return new King('white', position);
+      case 'k': return new King('black', position);
+      default: return null; // Пустая клетка
+    }
+  }
+}

@@ -1,0 +1,14 @@
+<label [for]="userId"> {{ labelText }}</label>
+<select 
+    [id]="userId"
+    [name]="selectName"
+    [formControlName]="formControlName"
+    [attr.required]="isRequired ? true : false"
+    [attr.disabled]="isDisabled ? true : false"
+    >
+        <ng-container *ngFor="let value of values">
+            <option [value]="value.id">{{ value.text }}</option>
+        </ng-container>
+        <!-- <option value="1">1 — black</option>
+        <option value="2">2 — white</option> -->
+</select>

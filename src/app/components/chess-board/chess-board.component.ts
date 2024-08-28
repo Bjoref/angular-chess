@@ -9,13 +9,13 @@ import { UserService } from '../../services/user-service.service';
 import { ChessHttpService } from '../../services/chess-http.service';
 import { GameService } from '../../services/game.service';
 import { User } from '../../models/user';
-import { SpinnerComponent } from '../spinner/spinner.component';
 import { LoadingStatus } from '../../models/loadStatus';
+import { UiSpinnerComponent } from '../ui/ui-spinner/ui-spinner.component';
 
 @Component({
   selector: 'app-chess-board',
   standalone: true,
-  imports: [CommonModule, ChessPieceComponent, SpinnerComponent],
+  imports: [CommonModule, ChessPieceComponent, UiSpinnerComponent],
   templateUrl: './chess-board.component.html',
   styleUrls: ['./chess-board.component.scss']
 })

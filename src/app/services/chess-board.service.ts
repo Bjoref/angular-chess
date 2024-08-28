@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, filter, Subject, switchMap, takeUntil, timer } from 'rxjs';
 import {
   ChessPiece,
   Pawn,
@@ -8,59 +8,52 @@ import {
   Bishop,
   Queen,
   King,
+  ChessPieceFactory,
+  
 } from '../models/chessPieces';
+import { ChessHttpService } from './chess-http.service';
 import { ChessRulesService } from './chess-rules.service';
+import { User } from '../models/user';
+import { UserService } from './user-service.service';
+import { GameService } from './game.service';
+import { Game } from '../models/game';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ChessBoardService {
-  private boardStateSubject = new BehaviorSubject<(ChessPiece | null)[][]>(
-    this.initializeBoard()
-  );
+export class ChessBoardService implements OnDestroy {
+  private destroy$ = new Subject<void>();
+  private boardStateSubject = new BehaviorSubject<(ChessPiece | null)[][]>([]); // Пустая доска при инициализации
   boardState$ = this.boardStateSubject.asObservable();
   private draggedPiece: {
     piece: ChessPiece;
     from: { row: number; col: number };
   } | null = null;
+  private user: User | null = null;
+  private game: Game | null = null;
+  private ascii: any
 
   private whiteTurn = true; // Индикатор текущего хода (белые или черные)
 
-  constructor(private chessRulesService: ChessRulesService) {}
+  constructor(
+    private chessRulesService: ChessRulesService,
+    private chessHttpService: ChessHttpService,
+    private userService: UserService,
+    private gameService: GameService
+  ) {
+    this.userService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((user) => {
+        this.user = user;
+      });
 
-  initializeBoard(): (ChessPiece | null)[][] {
-    const emptyRow: (ChessPiece | null)[] = Array(8).fill(null);
-    return [
-      [
-        new Rook('black', { row: 0, col: 0 }),
-        new Knight('black', { row: 0, col: 1 }),
-        new Bishop('black', { row: 0, col: 2 }),
-        new Queen('black', { row: 0, col: 3 }),
-        new King('black', { row: 0, col: 4 }),
-        new Bishop('black', { row: 0, col: 5 }),
-        new Knight('black', { row: 0, col: 6 }),
-        new Rook('black', { row: 0, col: 7 }),
-      ],
-      Array(8)
-        .fill(null)
-        .map((_, col) => new Pawn('black', { row: 1, col })),
-      ...Array(4)
-        .fill(null)
-        .map(() => emptyRow.slice()), // Создаем отдельные пустые ряды
-      Array(8)
-        .fill(null)
-        .map((_, col) => new Pawn('white', { row: 6, col })),
-      [
-        new Rook('white', { row: 7, col: 0 }),
-        new Knight('white', { row: 7, col: 1 }),
-        new Bishop('white', { row: 7, col: 2 }),
-        new Queen('white', { row: 7, col: 3 }),
-        new King('white', { row: 7, col: 4 }),
-        new Bishop('white', { row: 7, col: 5 }),
-        new Knight('white', { row: 7, col: 6 }),
-        new Rook('white', { row: 7, col: 7 }),
-      ],
-    ];
+    this.gameService.currentGame$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((game) => {
+        this.game = game;
+      });
+
+      this.subscribeToGameUpdates();
   }
 
   getBoardState(): (ChessPiece | null)[][] {
@@ -150,9 +143,87 @@ export class ChessBoardService {
         this.whiteTurn = !this.whiteTurn; // Меняем ход после успешного хода
 
         audio.play(); // Проигрываем звук
+        // Конвертируем координаты в шахматную нотацию
+        const fromPosition = this.convertToChessNotation(from.row, from.col);
+        const toPosition = this.convertToChessNotation(row, col);
+
+        // Отправка хода на сервер
+        if (this.game?.id && this.user?.id) {
+          this.chessHttpService
+            .move(this.game.id, this.user.id, fromPosition, toPosition)
+            .subscribe(
+              (response) => {
+                console.log('Move successful:', response);
+              },
+              (error) => {
+                console.error('Error making move:', error);
+              }
+            );
+        }
       }
 
       this.draggedPiece = null;
     }
+  }
+
+  convertToChessNotation(row: number, col: number): string {
+    const columns = 'abcdefgh';
+    const chessRow = 8 - row;
+    const chessCol = columns[col];
+    return `${chessCol}${chessRow}`;
+  }
+
+  private subscribeToGameUpdates() {
+    this.gameService.currentGame$
+      .pipe(
+        takeUntil(this.destroy$),
+        filter((game) => !!game),
+        switchMap((game) => 
+          timer(0, 1000).pipe(
+            switchMap(() => this.chessHttpService.getAscii(game!.id))
+          )
+        )
+      )
+      .subscribe((ascii) => {
+        this.ascii = ascii;
+        this.updateBoardFromAscii(ascii.gameState); // Обновляем доску с сервера
+      });
+  }
+
+  private updateBoardFromAscii(gameState: string) {
+    // Разделяем строку на строки по переносу
+    const rows = gameState.trim().split('\n');
+    const newBoard: (ChessPiece | null)[][] = [];
+  
+    rows.forEach((row, rowIndex) => {
+      const newRow: (ChessPiece | null)[] = [];
+      // Отфильтровываем только те символы, которые являются фигурами или пустыми клетками
+      const chars = row
+        .replace(/[^prnbqkPRNBQK\.]/g, '')
+        .split('');
+
+      chars.forEach((char, colIndex) => {
+        // Создаем фигуры или пустые клетки
+        const piece = ChessPieceFactory.createPieceFromAscii(char, {
+          row: rowIndex,
+          col: colIndex,
+        });
+        newRow.push(piece);
+      });
+
+      if (newRow.length === 8) { // Убедимся, что длина строки соответствует ширине доски
+        newBoard.push(newRow); 
+      }
+    });
+
+    if (newBoard.length === 8) { // Убедимся, что высота доски 8
+      this.boardStateSubject.next(newBoard); // Обновляем состояние доски
+    }
+  }
+  
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

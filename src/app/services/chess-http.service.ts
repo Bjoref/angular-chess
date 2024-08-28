@@ -22,4 +22,13 @@ export class ChessHttpService {
   getGameInfo(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}Game/GetInfo?gameId=${id}`);
   }
+
+  move(gameId: string, playerToken: string, fromPosition: string, toPosition: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}Game/Move?gameId=${gameId}&playerToken=${playerToken}&fromPosition=${fromPosition}&toPosition=${toPosition}`);
+  }
+
+  getAscii(gameId: string): Observable<any> {
+    console.log(this.http.get(`${this.apiUrl}Game/GetAscii?gameId=${gameId}`))
+    return this.http.get(`${this.apiUrl}Game/GetAscii?gameId=${gameId}`);
+  }
 }

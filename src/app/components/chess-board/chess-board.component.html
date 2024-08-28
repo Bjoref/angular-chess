@@ -1,5 +1,5 @@
 <div *ngIf="loadingStatus === 'Loading'; else boardTemplate">
-  <app-spinner></app-spinner>
+  <ui-spinner></ui-spinner>
 </div>
 
 <ng-template #boardTemplate>
@@ -27,12 +27,14 @@
             (drop)="onDrop($event, i, j)"
           >
             <ng-container *ngIf="boardState$ | async as boardState">
-              <app-chess-piece
-                *ngIf="boardState[i][j]"
-                [piece]="boardState[i][j]!"
-                draggable="true"
-                (dragstart)="onDragStart($event, i, j)"
-              ></app-chess-piece>
+              <ng-container *ngIf="boardState.length">
+                <app-chess-piece
+                  *ngIf="boardState[i][j]"
+                  [piece]="boardState[i][j]!"
+                  draggable="true"
+                  (dragstart)="onDragStart($event, i, j)"
+                ></app-chess-piece>
+              </ng-container>
             </ng-container>
           </div>
         </div>
