@@ -1,10 +1,14 @@
-<form (ngSubmit)="onSubmit($event)" [formGroup]="form">
-  <div class="form-group">
-    <label for="userId">Choose id</label>
-    <select id="userId" name="side" formControlName="id" required>
-      <option value="1">1 — black</option>
-      <option value="2">2 — white</option>
-    </select>
+<form (submit)="onSubmit($event)" [formGroup]="form" class="login-page__form">
+  <div class="form-group login-page__form-group">
+    <ui-select
+      formControlName="id"
+      [labelText]="'Choose id'"
+      [values]="[{id: '1', text: '1 — black'}, {id: '2', text: '2 — white'}]"
+      [isDisabled]="true"
+    ></ui-select>
   </div>
-  <button type="submit">Submit</button>
+  <ui-button
+    inputType="submit"
+    buttonText="Submit"></ui-button>
+  <!-- <button type="submit">Submit</button> -->
 </form>

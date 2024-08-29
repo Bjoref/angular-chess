@@ -1,14 +1,16 @@
-<label [for]="userId"> {{ labelText }}</label>
-<select 
-    [id]="userId"
-    [name]="selectName"
-    [formControlName]="formControlName"
-    [attr.required]="isRequired ? true : false"
-    [attr.disabled]="isDisabled ? true : false"
-    >
+<!-- ui-select.component.html -->
+<div class="ui-select">
+  <mat-form-field>
+    <mat-label class="ui-select__label">{{ labelText }}</mat-label>
+    <mat-select
+      [value]="value"
+      [required]="isRequired"
+      [disabled]="isDisabled"
+      (selectionChange)="onSelectChange($event.value)" 
+      class="ui-select__select">
         <ng-container *ngFor="let value of values">
-            <option [value]="value.id">{{ value.text }}</option>
+          <mat-option class="ui-select__options" [value]="value.id">{{ value.text }}</mat-option>
         </ng-container>
-        <!-- <option value="1">1 — black</option>
-        <option value="2">2 — white</option> -->
-</select>
+    </mat-select>
+  </mat-form-field>
+</div>

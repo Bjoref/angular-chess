@@ -3,13 +3,15 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../services/user-service.service';
 import { GameService } from '../../services/game.service';
+import { UiSelectComponent } from '../ui/ui-select/ui-select.component';
+import { UiButtonComponent } from '../ui/ui-button/ui-button.component';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, UiSelectComponent, UiButtonComponent],
   templateUrl: './login-page.component.html',
-  styleUrl: './login-page.component.scss',
+  styleUrls: ['./login-page.component.scss'],
 })
 export class LoginPageComponent {
   @Output() userId: EventEmitter<string> = new EventEmitter<string>();
@@ -17,7 +19,7 @@ export class LoginPageComponent {
 
   constructor(private router: Router, private userService: UserService, private fb: FormBuilder, private gameService: GameService) {
     this.form = this.fb.group({
-      id: ''
+      id: [{value: '', disabled: false}]  // Управление состоянием disabled здесь
     });
   }
 

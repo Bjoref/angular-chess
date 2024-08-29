@@ -1,25 +1,12 @@
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-label {
-  font-weight: bold;
-}
-
-input,
-select,
-button {
-  padding: 5px;
-  font-size: 14px;
-}
-
-button {
-  cursor: pointer;
-}
-
-.form-group {
+.login-page {
+  &__form {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 10px;
+
+    &-group {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
 }
