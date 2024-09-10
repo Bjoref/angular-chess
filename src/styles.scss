@@ -11,7 +11,9 @@ body {
   font-family: var(--fonts-stack);
   color: white;
 }
-
+.mat-form-field label {
+  font-family: var(--fonts-stack);
+}
 // @media (max-width: 375px) { 
 //   .chess-board {
 //     grid-template-rows: repeat(8, 40px);
