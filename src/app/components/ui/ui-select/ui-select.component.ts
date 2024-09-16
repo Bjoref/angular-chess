@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { SelectValue } from '../../../models/ui';
 import { CommonModule } from '@angular/common';
@@ -22,6 +22,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   ],
   templateUrl: './ui-select.component.html',
   styleUrls: ['./ui-select.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

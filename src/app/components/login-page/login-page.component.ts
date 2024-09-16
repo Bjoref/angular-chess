@@ -5,11 +5,12 @@ import { UserService } from '../../services/user-service.service';
 import { GameService } from '../../services/game.service';
 import { UiSelectComponent } from '../ui/ui-select/ui-select.component';
 import { UiButtonComponent } from '../ui/ui-button/ui-button.component';
+import { UserPanelComponent } from '../user-panel/user-panel.component';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, UiSelectComponent, UiButtonComponent],
+  imports: [FormsModule, ReactiveFormsModule, UiSelectComponent, UiButtonComponent, UserPanelComponent],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss'],
 })

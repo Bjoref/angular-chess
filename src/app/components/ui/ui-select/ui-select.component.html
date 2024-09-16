@@ -1,16 +1,19 @@
 <!-- ui-select.component.html -->
 <div class="ui-select">
-  <mat-form-field>
+  <!-- <mat-form-field
+    panelClass="ui-select__select"
+  >
     <mat-label class="ui-select__label">{{ labelText }}</mat-label>
     <mat-select
       [value]="value"
       [required]="isRequired"
       [disabled]="isDisabled"
-      (selectionChange)="onSelectChange($event.value)" 
+      (selectionChange)="onSelectChange($event.value)"
+      panelClass="ui-select__select"
       class="ui-select__select">
         <ng-container *ngFor="let value of values">
           <mat-option class="ui-select__options" [value]="value.id">{{ value.text }}</mat-option>
         </ng-container>
     </mat-select>
-  </mat-form-field>
+  </mat-form-field> -->
 </div>
