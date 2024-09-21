@@ -1,20 +1,25 @@
-@import 'assets/scss/reset';
-@import 'assets/scss/fonts';
-@import 'assets/scss/variables';
+@import "assets/scss/reset";
+@import "assets/scss/fonts";
+@import "assets/scss/variables";
 
 body {
+  width: 400px;
+  max-height: 700px;
+  padding: 16px;
+  margin: auto;
+  overflow-y: auto;
+  color: var(--secondary-color);
   background-color: var(--primary-color);
   // background-image: url('assets/images/bg-1.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
   font-family: var(--fonts-stack);
-  color: white;
 }
 .mat-form-field label {
   font-family: var(--fonts-stack);
 }
-// @media (max-width: 375px) { 
+// @media (max-width: 375px) {
 //   .chess-board {
 //     grid-template-rows: repeat(8, 40px);
 //     grid-template-columns: repeat(8, 40px);
@@ -24,7 +29,7 @@ body {
 //   }
 // }
 
-// @media (max-width: 414px) { 
+// @media (max-width: 414px) {
 //   .chess-board {
 //     grid-template-rows: repeat(8, 50px);
 //     grid-template-columns: repeat(8, 50px);
@@ -34,7 +39,7 @@ body {
 //   }
 // }
 
-// @media (min-width: 415px) { 
+// @media (min-width: 415px) {
 //   .chess-board {
 //     grid-template-rows: repeat(8, 60px);
 //     grid-template-columns: repeat(8, 60px);
@@ -43,4 +48,3 @@ body {
 //     font-size: 2.5em;
 //   }
 // }
-

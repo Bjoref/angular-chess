@@ -1,13 +1,13 @@
 .user-panel {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  margin-bottom: 16px;
 
   &__logo {
     width: 32px;
     height: 32px;
-    background-color: var(--white-color);
+    background-color: var(--secondary-color);
     border-radius: 50%;
   }
 

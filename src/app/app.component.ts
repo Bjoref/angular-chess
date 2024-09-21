@@ -41,11 +41,6 @@ export class AppComponent implements OnInit, OnDestroy {
     console.log(this.userId)
   }
 
-  navigateToMenu() {
-    this.userService.setUser(this.user!);
-    this.router.navigate(['/menu']);
-  }
-
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();

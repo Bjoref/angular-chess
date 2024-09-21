@@ -1,1 +1,6 @@
-<button [type]="inputType" (click)="callParentFunction()">{{ buttonText }}</button>
+<button [type]="inputType" (click)="callParentFunction()">
+    {{ buttonText }}
+    <img src="../../../assets/images/right-arrow.svg" alt="">
+    <img *ngIf="oldPc" src="../../../assets/images/old-pc.svg" alt="">
+    <img *ngIf="rules" src="../../../assets/images/rules.svg" alt="">
+</button>

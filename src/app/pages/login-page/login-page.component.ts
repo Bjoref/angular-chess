@@ -5,13 +5,13 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../services/user-service.service';
 import { GameService } from '../../services/game.service';
-import { UiSelectComponent } from '../ui/ui-select/ui-select.component';
-import { UiButtonComponent } from '../ui/ui-button/ui-button.component';
-import { UserPanelComponent } from '../user-panel/user-panel.component';
+import { UiSelectComponent } from '../../components/ui/ui-select/ui-select.component';
+import { UiButtonComponent } from '../../components/ui/ui-button/ui-button.component';
+import { UserPanelComponent } from '../../components/user-panel/user-panel.component';
 import { UserIdService } from '../../services/user-id.service';
 import { ChessHttpService } from '../../services/chess-http.service';
 import { Subject, takeUntil } from 'rxjs';
@@ -25,6 +25,7 @@ import { User } from '../../models/user';
     UiSelectComponent,
     UiButtonComponent,
     UserPanelComponent,
+    RouterModule
   ],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss'],
@@ -41,7 +42,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     private chessHttpService: ChessHttpService,
     private gameService: GameService
   ) {
-    console.log(this.userIdService);
   }
 
   ngOnInit(): void {
@@ -83,6 +83,10 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       .getUserInQueue(id, guid)
       .pipe(takeUntil(this.destroy$))
       .subscribe();
+  }
+
+  showRules = (): void => {
+    this.router.navigate(['/rules']);
   }
 
   ngOnDestroy() {

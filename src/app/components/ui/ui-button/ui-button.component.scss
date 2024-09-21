@@ -1,14 +1,32 @@
 button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   width: 100%;
-  outline: 5px dotted var(--white-color);
+  height: 42px;
   padding: 5px;
+  outline: 5px dotted var(--secondary-color);
   font-size: 18px;
   cursor: pointer;
 
-  &:hover {
-    outline: 5px solid var(--white-color);
-    background-color: var(--white-color);
+  & img {
+    display: none;
+    width: 32px;
+    height: 32px;
+  }
+
+  &:hover,
+  &:focus,
+  &:active {
+    outline: 5px solid var(--secondary-color);
+    outline-offset: 5px;
+    background-color: var(--secondary-color);
     color: var(--primary-color);
+
+    & img {
+      display: initial;
+    }
   }
 }
 

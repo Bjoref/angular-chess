@@ -1,13 +1,15 @@
 <div class="user-panel">
-    <img [src]="randomLogo" alt="logo" class="user-panel__logo">
-    <p class="user-panel__nickname">Ник пользователя</p>
-    <p class="user-panel__id">#{{ userId }}</p>
+  <img [src]="randomLogo" alt="logo" class="user-panel__logo" />
+  <p class="user-panel__nickname">Ник пользователя</p>
+  <p class="user-panel__id">#{{ userId }}</p>
 </div>
 
-<input type="text"
-       placeholder="Введите Id"
-       class="user-panel__test-input"
-       [(ngModel)]="userId"
-       (ngModelChange)="onUserIdChange($event)"
-       numbers
-       maxlength="2">
+<input
+  type="text"
+  placeholder="Введите Id"
+  class="user-panel__test-input"
+  [(ngModel)]="userId"
+  (ngModelChange)="onUserIdChange($event)"
+  numbers
+  maxlength="2"
+/>
