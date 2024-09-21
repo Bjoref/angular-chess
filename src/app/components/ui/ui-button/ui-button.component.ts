@@ -10,4 +10,13 @@ import { Component, Input } from '@angular/core';
 export class UiButtonComponent {
   @Input() inputType: string = 'button';
   @Input() buttonText: string = '';
+  // Принимаем функцию от родителя
+  @Input() parentFunction!: () => void;
+
+  // Вызываем функцию, когда пользователь нажимает на кнопку
+  callParentFunction() {
+    if (this.parentFunction) {
+      this.parentFunction();
+    }
+  }
 }

@@ -1,15 +1,2 @@
 <app-user-panel></app-user-panel>
-<form (submit)="onSubmit($event)" [formGroup]="form" class="login-page__form">
-  <div class="form-group login-page__form-group">
-    <ui-select
-      formControlName="id"
-      [labelText]="'Choose id'"
-      [values]="[{id: '1', text: '1 — black'}, {id: '2', text: '2 — white'}]"
-      [isDisabled]="true"
-    ></ui-select>
-  </div>
-  <ui-button
-    inputType="submit"
-    buttonText="SUBMIT"></ui-button>
-  <!-- <button type="submit">Submit</button> -->
-</form>
+<ui-button inputType="button" buttonText="Играть" [parentFunction]="startNewGame"> </ui-button>
