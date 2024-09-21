@@ -3,11 +3,10 @@
 @import "assets/scss/variables";
 
 body {
-  width: 400px;
-  max-height: 700px;
+
   padding: 16px;
   margin: auto;
-  overflow-y: auto;
+  overflow-y: scroll;
   color: var(--secondary-color);
   background-color: var(--primary-color);
   // background-image: url('assets/images/bg-1.png');
