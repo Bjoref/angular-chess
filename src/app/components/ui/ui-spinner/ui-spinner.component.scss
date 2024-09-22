@@ -1,6 +1,6 @@
 :root {
   --dark-clr: var(--primary-color);
-  --light-clr: #f1d874;
+  --light-clr: var(--secondary-color);
 }
 html,
 body {
@@ -26,7 +26,7 @@ body {
 .chess-icon {
   height: 125px;
   width: 125px;
-  border: 8px solid #333;
+  border: 8px solid var(--secondary-color);
   border-radius: 20px;
   background-image: conic-gradient(
     var(--dark-clr) 0,
