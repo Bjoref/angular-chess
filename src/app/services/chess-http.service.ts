@@ -12,6 +12,7 @@ export class ChessHttpService {
   constructor() {}
 
   registerUser(id: string, color: number = 0): Observable<string> {
+    console.log(id)
     return this.http.get(`${this.apiUrl}Queue/Register?playerToken=${id}&preferedColor=${color}`, { responseType: 'text' });
   }
 
@@ -19,16 +20,11 @@ export class ChessHttpService {
     return this.http.get<number>(`${this.apiUrl}Queue/GetStatus?playerToken=${id}&guid=${guid}`);
   }
 
-  getGameInfo(id: number): Observable<any> {
+  getGameInfo(id: number | string): Observable<any> {
     return this.http.get(`${this.apiUrl}Game/GetInfo?gameId=${id}`);
   }
 
   move(gameId: string, playerToken: string, fromPosition: string, toPosition: string): Observable<any> {
     return this.http.get(`${this.apiUrl}Game/Move?gameId=${gameId}&playerToken=${playerToken}&fromPosition=${fromPosition}&toPosition=${toPosition}`);
-  }
-
-  getAscii(gameId: string): Observable<any> {
-    console.log(this.http.get(`${this.apiUrl}Game/GetAscii?gameId=${gameId}`))
-    return this.http.get(`${this.apiUrl}Game/GetAscii?gameId=${gameId}`);
   }
 }

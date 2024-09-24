@@ -12,7 +12,11 @@
       <div class="chess-board__label_left">
         <div *ngFor="let row of rows; let i = index" class="chess-board__label-numbers">{{ 8 - i }}</div>
       </div>
+
       <div class="chess-board__container">
+        <div class="chess-board__label_chars">
+          <div *ngFor="let col of cols; let j = index" class="chess-board__label-chars">{{ 'abcdefgh'[j] }}</div>
+        </div>
         <div *ngFor="let row of rows; let i = index" class="chess-board__row">
           <div
             *ngFor="let col of cols; let j = index"
@@ -38,9 +42,13 @@
             </ng-container>
           </div>
         </div>
-        <div class="chess-board__label_bottom">
+        <div class="chess-board__label_chars">
           <div *ngFor="let col of cols; let j = index" class="chess-board__label-chars">{{ 'abcdefgh'[j] }}</div>
         </div>
+      </div>
+      
+      <div class="chess-board__label_left">
+        <div *ngFor="let row of rows; let i = index" class="chess-board__label-numbers">{{ 8 - i }}</div>
       </div>
     </div>
   </div>

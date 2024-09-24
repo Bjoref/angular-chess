@@ -11,6 +11,7 @@ import { GameService } from '../../services/game.service';
 import { User } from '../../models/user';
 import { LoadingStatus } from '../../models/loadStatus';
 import { UiSpinnerComponent } from '../ui/ui-spinner/ui-spinner.component';
+import { SignalrService } from '../../services/signalr.service'; 
 
 @Component({
   selector: 'app-chess-board',
@@ -34,7 +35,8 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
     private chessBoardService: ChessBoardService,
     private userService: UserService,
     private chessHttpService: ChessHttpService,
-    private gameService: GameService // Подключаем GameService
+    private gameService: GameService,
+    public signalRService: SignalrService
   ) {
     this.boardState$ = this.chessBoardService.boardState$;
   }
@@ -45,13 +47,16 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
     // Проверяем наличие пользователя
     if (this.user && this.user.id && this.user.guid) {
       // Выполняем запрос на получение данных о пользователе в очереди
-      this.fetchGameInfoRepeatedly(this.user.id, this.user.guid);
+      this.fetchGameInfo(this.user.id, this.user.guid);
     }
 
     this.updateCurrentPlayer();
+
+    // this.signalRService.onNewGame().subscribe(data => { if (data != undefined) this.onNewGameFromSignalR(data); });
   }
 
-  fetchGameInfoRepeatedly(id: string, guid: string) {
+
+  fetchGameInfo(id: string, guid: string) {
     this.loadingStatus = LoadingStatus.Loading; // Устанавливаем статус "Loading"
     timer(0, 1000)
       .pipe(
