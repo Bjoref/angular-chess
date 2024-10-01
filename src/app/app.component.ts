@@ -38,7 +38,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   receiveData(data: string) {
     this.userId = data;
-    console.log(this.userId)
   }
 
   ngOnDestroy() {

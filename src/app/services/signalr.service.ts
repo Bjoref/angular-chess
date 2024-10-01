@@ -21,6 +21,7 @@ export class SignalrService {
   private opened: boolean = false;
 
   public onNewGameInfo() {
+    console.log(2312321)
     return this.newGameInfo.asObservable();
   }
 

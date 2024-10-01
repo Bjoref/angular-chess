@@ -12,7 +12,6 @@ export class ChessHttpService {
   constructor() {}
 
   registerUser(id: string, color: number = 0): Observable<string> {
-    console.log(id)
     return this.http.get(`${this.apiUrl}Queue/Register?playerToken=${id}&preferedColor=${color}`, { responseType: 'text' });
   }
 

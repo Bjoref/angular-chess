@@ -12,6 +12,7 @@ import { User } from '../../models/user';
 import { LoadingStatus } from '../../models/loadStatus';
 import { UiSpinnerComponent } from '../ui/ui-spinner/ui-spinner.component';
 import { SignalrService } from '../../services/signalr.service'; 
+import { GameInfo } from '../../models/gameInfo';
 
 @Component({
   selector: 'app-chess-board',
@@ -52,7 +53,11 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
 
     this.updateCurrentPlayer();
 
-    // this.signalRService.onNewGame().subscribe(data => { if (data != undefined) this.onNewGameFromSignalR(data); });
+    this.signalRService.onNewGameInfo().subscribe(data => { if (data != undefined) this.onNewGameFromSignalR(data); });
+  }
+
+  onNewGameFromSignalR(data: GameInfo): void  {
+    console.log(data)
   }
 
 
