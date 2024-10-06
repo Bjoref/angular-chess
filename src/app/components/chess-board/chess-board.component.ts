@@ -13,6 +13,7 @@ import { LoadingStatus } from '../../models/loadStatus';
 import { UiSpinnerComponent } from '../ui/ui-spinner/ui-spinner.component';
 import { SignalrService } from '../../services/signalr.service';
 import { GameInfo } from '../../models/gameInfo';
+import { UserIdService } from '../../services/user-id.service';
 
 @Component({
   selector: 'app-chess-board',
@@ -36,7 +37,8 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private chessHttpService: ChessHttpService,
     private gameService: GameService,
-    public signalRService: SignalrService
+    public signalRService: SignalrService,
+    private userIdService: UserIdService
   ) {
     this.boardState$ = this.chessBoardService.boardState$;
   }
@@ -81,7 +83,7 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         (gameData: GameInfo) => {
-          console.log(gameData)
+          (gameData)
           this.gameService.updateGame(gameData); // Обновляем состояние игры
           this.updateCurrentPlayer(gameData); // Здесь передаем данные игры
         }
@@ -106,7 +108,7 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
   }
 
   updateCurrentPlayer(gameData: GameInfo) {
-    this.currentPlayer = this.chessBoardService.updateCurrentPlayer(gameData);
+    this.userIdService.currentColor = this.chessBoardService.updateCurrentPlayer(gameData);
   }
 
   // Вызов сервиса для начала перетаскивания
@@ -114,8 +116,8 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
     const board = this.chessBoardService.getBoardState();
     const piece = board[row][col];
 
-    if (piece && ((this.currentPlayer === 'White' && piece.color === 'white') || (this.currentPlayer === 'Black' && piece.color === 'black'))) {
-      this.chessBoardService.onDragStart(row, col, event, this.currentPlayer);
+    if (piece && ((this.userIdService.currentColor === 'White' && piece.color === 'white') || (this.userIdService.currentColor === 'Black' && piece.color === 'black'))) {
+      this.chessBoardService.onDragStart(row, col, event, this.userIdService.currentColor);
 
       const moves = this.chessBoardService.getValidMoves(piece, row, col);
       this.highlightMoves = moves.filter(move => !board[move.row][move.col]);
@@ -130,7 +132,7 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
   }
 
   onDrop(event: DragEvent, row: number, col: number) {
-    this.chessBoardService.onDrop(row, col, this.currentPlayer); // Передаем currentPlayer для проверки
+    this.chessBoardService.onDrop(row, col, this.userIdService.currentColor); // Передаем currentPlayer для проверки
     this.clearHighlights();
   }
 

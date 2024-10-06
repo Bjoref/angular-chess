@@ -1,5 +1,12 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, filter, Subject, switchMap, takeUntil, timer } from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  Subject,
+  switchMap,
+  takeUntil,
+  timer,
+} from 'rxjs';
 import {
   ChessPiece,
   Pawn,
@@ -9,7 +16,6 @@ import {
   Queen,
   King,
   ChessPieceFactory,
-  
 } from '../models/chessPieces';
 import { ChessHttpService } from './chess-http.service';
 import { ChessRulesService } from './chess-rules.service';
@@ -34,7 +40,6 @@ export class ChessBoardService implements OnDestroy {
   private user: User | null = null;
   private game: GameInfo | null = null;
   private ascii: any;
-
 
   private whiteTurn = true; // Индикатор текущего хода (белые или черные)
 
@@ -81,75 +86,87 @@ export class ChessBoardService implements OnDestroy {
     return this.whiteTurn;
   }
 
-  onDragStart(row: number, col: number, event: DragEvent, currentPlayer: string) {
+  onDragStart(
+    row: number,
+    col: number,
+    event: DragEvent,
+    currentPlayer: string
+  ) {
     const board = this.getBoardState();
     const piece = board[row][col];
-    
+
     // Если это не ход текущего игрока, предотвращаем перетаскивание
-    if (!piece || (this.userIdService.currentColor === 'White' && piece.color !== 'white') || (this.userIdService.currentColor === 'Black' && piece.color !== 'black')) {
+    if (
+      !piece ||
+      (this.userIdService.currentColor === 'White' &&
+        piece.color !== 'white') ||
+      (this.userIdService.currentColor === 'Black' && piece.color !== 'black')
+    ) {
       event.preventDefault();
       return;
     }
-  
+
     this.draggedPiece = { piece, from: { row, col } };
-  
+
     const target = event.target as HTMLElement;
     const dragImage = target.cloneNode(true) as HTMLElement;
-  
+
     dragImage.style.position = 'absolute';
     dragImage.style.top = '-9999px';
     document.body.appendChild(dragImage);
-  
+
     event.dataTransfer?.setDragImage(
       dragImage,
       target.clientWidth / 2,
       target.clientHeight / 2
     );
-  
+
     setTimeout(() => {
       document.body.removeChild(dragImage);
     }, 0);
   }
-  
-  onDrop(row: number, col: number, currentPlayer: string):any {
+
+  onDrop(row: number, col: number, currentPlayer: string): any {
     if (this.draggedPiece) {
       const board = this.getBoardState().map((row) => [...row]);
       const { piece, from } = this.draggedPiece;
-  
+
       const validMoves = this.getValidMoves(piece, from.row, from.col);
       const isValidMove = validMoves.some(
         (move) => move.row === row && move.col === col
       );
-  
+
       if (isValidMove) {
         const targetPiece = board[row][col];
-  
+
         const audio = targetPiece
           ? new Audio('assets/sounds/capture.mp3')
           : new Audio('assets/sounds/move.mp3');
-  
+
         if (targetPiece && targetPiece.color !== piece.color) {
           board[row][col] = null;
         }
-  
+
         board[from.row][from.col] = null;
         piece.position = { row, col };
         board[row][col] = piece;
-  
+
         this.boardStateSubject.next(board);
         this.whiteTurn = !this.whiteTurn;
-  
+
         audio.play();
-  
+
         const fromPosition = this.convertToChessNotation(from.row, from.col);
         const toPosition = this.convertToChessNotation(row, col);
-  
+
         if (this.game?.id && this.user?.id) {
           this.chessHttpService
             .move(this.game.id, this.user.id, fromPosition, toPosition)
             .subscribe(
               (response) => {
                 console.log('Move successful:', response);
+                if (this.whiteTurn) this.userIdService.currentColor = 'Black';
+                else this.userIdService.currentColor = 'White';
               },
               (error) => {
                 console.error('Error making move:', error);
@@ -157,7 +174,6 @@ export class ChessBoardService implements OnDestroy {
             );
         }
       }
-
 
       this.draggedPiece = null;
     }
@@ -186,7 +202,7 @@ export class ChessBoardService implements OnDestroy {
         this.ascii = game.gameAscii;
         this.updateBoardFromAscii(this.ascii);
         // Обновляем текущее состояние игры и игрока
-        
+
         this.updateGameTurn(game);
       });
   }
@@ -195,13 +211,11 @@ export class ChessBoardService implements OnDestroy {
     // Разделяем строку на строки по переносу
     const rows = gameState.trim().split('\n');
     const newBoard: (ChessPiece | null)[][] = [];
-  
+
     rows.forEach((row, rowIndex) => {
       const newRow: (ChessPiece | null)[] = [];
       // Отфильтровываем только те символы, которые являются фигурами или пустыми клетками
-      const chars = row
-        .replace(/[^prnbqkPRNBQK\.]/g, '')
-        .split('');
+      const chars = row.replace(/[^prnbqkPRNBQK\.]/g, '').split('');
 
       chars.forEach((char, colIndex) => {
         // Создаем фигуры или пустые клетки
@@ -225,7 +239,7 @@ export class ChessBoardService implements OnDestroy {
   private updateGameTurn(game: GameInfo) {
     // Обновляем информацию о текущем ходе
     this.whiteTurn = game.turn === 'w';
-    if(this.whiteTurn) this.userIdService.currentColor = 'White';
+    if (this.whiteTurn) this.userIdService.currentColor = 'White';
     else this.userIdService.currentColor = 'Black';
 
     // Сохраняем игру в сервисе GameService

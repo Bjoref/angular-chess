@@ -66,7 +66,6 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (guid) => {
-          console.log('Game started with GUID:', guid);
           this.userService.updateUserGuid(guid); // Обновляем guid пользователя в сервисе
           this.getUserQueueStatus(userId, guid);
           this.router.navigate(['/game']);
