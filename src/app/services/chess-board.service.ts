@@ -22,7 +22,6 @@ import { ChessRulesService } from './chess-rules.service';
 import { User } from '../models/user';
 import { UserService } from './user-service.service';
 import { GameService } from './game.service';
-import { Game } from '../models/game';
 import { GameInfo } from '../models/gameInfo';
 import { UserIdService } from './user-id.service';
 
@@ -90,7 +89,6 @@ export class ChessBoardService implements OnDestroy {
     row: number,
     col: number,
     event: DragEvent,
-    currentPlayer: string
   ) {
     const board = this.getBoardState();
     const piece = board[row][col];

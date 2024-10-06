@@ -117,7 +117,7 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
     const piece = board[row][col];
 
     if (piece && ((this.userIdService.currentColor === 'White' && piece.color === 'white') || (this.userIdService.currentColor === 'Black' && piece.color === 'black'))) {
-      this.chessBoardService.onDragStart(row, col, event, this.userIdService.currentColor);
+      this.chessBoardService.onDragStart(row, col, event);
 
       const moves = this.chessBoardService.getValidMoves(piece, row, col);
       this.highlightMoves = moves.filter(move => !board[move.row][move.col]);
