@@ -64,28 +64,28 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
 
   fetchGameInfo(id: string, guid: string) {
     this.loadingStatus = LoadingStatus.Loading; // Устанавливаем статус "Loading"
-    
-    timer(0, 1000) // Запускаем таймер с интервалом 1 секунда
-      .pipe(
-        takeUntil(this.destroy$), // Отмена по уничтожению компонента
-        switchMap(() => this.chessHttpService.getUserInQueue(id, guid)), // Получаем статус пользователя в очереди
-        filter(gameId => gameId !== 0), // Продолжаем только если игра найдена
-        switchMap(gameId => this.chessHttpService.getGameInfo(gameId)), // Запрашиваем информацию о текущей игре
-        take(1), // Берем только первый успешный результат игры
-        finalize(() => {
-          this.loadingStatus = LoadingStatus.Success; // Устанавливаем статус "Success"
-        }),
-        catchError((error) => {
-          console.error('Error fetching game data:', error);
-          this.loadingStatus = LoadingStatus.Error; // Устанавливаем статус "Error" при ошибке
-          return []; // Возвращаем пустой массив, чтобы продолжить стрим
-        })
-      )
+  
+    this.chessHttpService.getUserInQueue(id, guid)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
-        (gameData: GameInfo) => {
-          (gameData)
-          this.gameService.updateGame(gameData); // Обновляем состояние игры
-          this.updateCurrentPlayer(gameData); // Здесь передаем данные игры
+        gameId => {
+          if (gameId !== 0) {
+            this.chessHttpService.getGameInfo(gameId).subscribe(
+              (gameData: GameInfo) => {
+                this.gameService.updateGame(gameData); // Обновляем состояние игры
+                this.updateCurrentPlayer(gameData); // Обновляем информацию о текущем игроке
+                this.loadingStatus = LoadingStatus.Success;
+              },
+              error => {
+                console.error('Error fetching game data:', error);
+                this.loadingStatus = LoadingStatus.Error;
+              }
+            );
+          }
+        },
+        error => {
+          console.error('Error fetching queue data:', error);
+          this.loadingStatus = LoadingStatus.Error;
         }
       );
   }

@@ -190,18 +190,12 @@ export class ChessBoardService implements OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         filter((game) => !!game),
-        switchMap((game) =>
-          timer(0, 1000).pipe(
-            switchMap(() => this.chessHttpService.getGameInfo(game!.id))
-          )
-        )
+        switchMap((game) => this.chessHttpService.getGameInfo(game!.id))
       )
       .subscribe((game) => {
         this.ascii = game.gameAscii;
         this.updateBoardFromAscii(this.ascii);
-        // Обновляем текущее состояние игры и игрока
-
-        this.updateGameTurn(game);
+        this.updateGameTurn(game); // Обновляем текущее состояние игры и игрока
       });
   }
 
