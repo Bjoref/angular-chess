@@ -1,8 +1,17 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserIdService {
-  public currentId: number = 1;
+  private currentId: number = 1;
+  public currentColor: string = 'White'
+
+  setUserId(id: number): void {
+    this.currentId = id;
+  }
+
+  getUserId(): number {
+    return this.currentId;
+  }
 }

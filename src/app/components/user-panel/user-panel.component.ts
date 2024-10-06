@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { NumbersDirective } from '../../directives/numbersOnly.directive';
 import { UserIdService } from '../../services/user-id.service';
 import { Subject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-panel',
@@ -16,38 +16,33 @@ export class UserPanelComponent implements OnInit, OnDestroy {
   randomLogo: string = '';
   userId: number = 1;
 
-  // Создаем Subject для подписки на изменения userId
+  // Subject для изменений userId
   private userIdSubject = new Subject<number>();
   private subscription: Subscription = new Subscription();
 
   constructor(private userIdService: UserIdService) {}
 
   ngOnInit(): void {
-    // Логика для выбора случайного логотипа
-    if (Math.floor(Math.random() * 2) + 1 === 1) {
-      this.randomLogo = 'assets/images/mock-data/king-one.svg';
-    } else {
-      this.randomLogo = 'assets/images/mock-data/king-two.svg';
-    }
+    // Выбираем случайный логотип
+    this.randomLogo =
+      Math.floor(Math.random() * 2) + 1 === 1
+        ? 'assets/images/mock-data/king-one.svg'
+        : 'assets/images/mock-data/king-two.svg';
 
-    // Подписка на изменения userId с debounce 3000ms
+    // Подписка на изменения userId
     this.subscription = this.userIdSubject
-      .pipe(
-        distinctUntilChanged() // Обрабатываем только измененные значения
-      )
+      .pipe(distinctUntilChanged())
       .subscribe((userId: number) => {
-        this.userIdService.currentId = userId; // Обновляем значение в сервисе
+        this.userIdService.setUserId(userId); // Сохраняем ID пользователя в сервисе
       });
   }
 
-  // Вызывается при изменении значения инпута
+  // Метод, вызываемый при изменении значения ID
   onUserIdChange(newUserId: number): void {
     this.userIdSubject.next(newUserId); // Отправляем новое значение в поток
   }
 
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe(); // Отписываемся от потока при уничтожении компонента
-    }
+    this.subscription.unsubscribe(); // Отписываемся при уничтожении компонента
   }
 }

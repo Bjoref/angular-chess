@@ -17,6 +17,8 @@ import { User } from '../models/user';
 import { UserService } from './user-service.service';
 import { GameService } from './game.service';
 import { Game } from '../models/game';
+import { GameInfo } from '../models/gameInfo';
+import { UserIdService } from './user-id.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,8 +32,9 @@ export class ChessBoardService implements OnDestroy {
     from: { row: number; col: number };
   } | null = null;
   private user: User | null = null;
-  private game: Game | null = null;
-  private ascii: any
+  private game: GameInfo | null = null;
+  private ascii: any;
+
 
   private whiteTurn = true; // Индикатор текущего хода (белые или черные)
 
@@ -39,7 +42,8 @@ export class ChessBoardService implements OnDestroy {
     private chessRulesService: ChessRulesService,
     private chessHttpService: ChessHttpService,
     private userService: UserService,
-    private gameService: GameService
+    private gameService: GameService,
+    private userIdService: UserIdService
   ) {
     this.userService.currentUser$
       .pipe(takeUntil(this.destroy$))
@@ -53,7 +57,7 @@ export class ChessBoardService implements OnDestroy {
         this.game = game;
       });
 
-      this.subscribeToGameUpdates();
+    this.subscribeToGameUpdates();
   }
 
   getBoardState(): (ChessPiece | null)[][] {
@@ -77,77 +81,69 @@ export class ChessBoardService implements OnDestroy {
     return this.whiteTurn;
   }
 
-  onDragStart(row: number, col: number, event: DragEvent) {
+  onDragStart(row: number, col: number, event: DragEvent, currentPlayer: string) {
     const board = this.getBoardState();
     const piece = board[row][col];
-
+    
     // Если это не ход текущего игрока, предотвращаем перетаскивание
-    if (
-      !piece ||
-      (this.whiteTurn && piece.color !== 'white') ||
-      (!this.whiteTurn && piece.color !== 'black')
-    ) {
+    if (!piece || (this.userIdService.currentColor === 'White' && piece.color !== 'white') || (this.userIdService.currentColor === 'Black' && piece.color !== 'black')) {
       event.preventDefault();
       return;
     }
-
+  
     this.draggedPiece = { piece, from: { row, col } };
-
+  
     const target = event.target as HTMLElement;
     const dragImage = target.cloneNode(true) as HTMLElement;
-
+  
     dragImage.style.position = 'absolute';
     dragImage.style.top = '-9999px';
     document.body.appendChild(dragImage);
-
+  
     event.dataTransfer?.setDragImage(
       dragImage,
       target.clientWidth / 2,
       target.clientHeight / 2
     );
-
+  
     setTimeout(() => {
       document.body.removeChild(dragImage);
     }, 0);
   }
-
-  onDrop(row: number, col: number) {
+  
+  onDrop(row: number, col: number, currentPlayer: string):any {
     if (this.draggedPiece) {
       const board = this.getBoardState().map((row) => [...row]);
       const { piece, from } = this.draggedPiece;
-
+  
       const validMoves = this.getValidMoves(piece, from.row, from.col);
       const isValidMove = validMoves.some(
         (move) => move.row === row && move.col === col
       );
-
+  
       if (isValidMove) {
-        const targetPiece = board[row][col]; // Получаем фигуру на целевой клетке
-
-        // Если на целевой клетке есть фигура и она вражеская
+        const targetPiece = board[row][col];
+  
         const audio = targetPiece
           ? new Audio('assets/sounds/capture.mp3')
           : new Audio('assets/sounds/move.mp3');
-
-        // Срубаем вражескую фигуру
+  
         if (targetPiece && targetPiece.color !== piece.color) {
-          board[row][col] = null; // Сначала удаляем вражескую фигуру
+          board[row][col] = null;
         }
-
-        // Перемещаем нашу фигуру на новую позицию
+  
         board[from.row][from.col] = null;
         piece.position = { row, col };
         board[row][col] = piece;
-
+  
         this.boardStateSubject.next(board);
-        this.whiteTurn = !this.whiteTurn; // Меняем ход после успешного хода
-
-        audio.play(); // Проигрываем звук
-        // Конвертируем координаты в шахматную нотацию
+        this.whiteTurn = !this.whiteTurn;
+  
+        audio.play();
+  
         const fromPosition = this.convertToChessNotation(from.row, from.col);
         const toPosition = this.convertToChessNotation(row, col);
-
-        // Отправка хода на сервер
+  
         if (this.game?.id && this.user?.id) {
           this.chessHttpService
             .move(this.game.id, this.user.id, fromPosition, toPosition)
@@ -162,15 +158,17 @@ export class ChessBoardService implements OnDestroy {
         }
       }
 
+
       this.draggedPiece = null;
     }
   }
 
-  convertToChessNotation(row: number, col: number): string {
-    const columns = 'abcdefgh';
-    const chessRow = 8 - row;
-    const chessCol = columns[col];
-    return `${chessCol}${chessRow}`;
+  updateCurrentPlayer(gameData: GameInfo): string {
+    if (gameData.turn === 'w') {
+      return 'White';
+    } else {
+      return 'Black';
+    }
   }
 
   private subscribeToGameUpdates() {
@@ -178,7 +176,7 @@ export class ChessBoardService implements OnDestroy {
       .pipe(
         takeUntil(this.destroy$),
         filter((game) => !!game),
-        switchMap((game) => 
+        switchMap((game) =>
           timer(0, 1000).pipe(
             switchMap(() => this.chessHttpService.getGameInfo(game!.id))
           )
@@ -186,7 +184,10 @@ export class ChessBoardService implements OnDestroy {
       )
       .subscribe((game) => {
         this.ascii = game.gameAscii;
-        this.updateBoardFromAscii(this.ascii); // Обновляем доску с сервера
+        this.updateBoardFromAscii(this.ascii);
+        // Обновляем текущее состояние игры и игрока
+        
+        this.updateGameTurn(game);
       });
   }
 
@@ -211,16 +212,41 @@ export class ChessBoardService implements OnDestroy {
         newRow.push(piece);
       });
 
-      if (newRow.length === 8) { // Убедимся, что длина строки соответствует ширине доски
-        newBoard.push(newRow); 
+      if (newRow.length === 8) {
+        newBoard.push(newRow);
       }
     });
 
-    if (newBoard.length === 8) { // Убедимся, что высота доски 8
-      this.boardStateSubject.next(newBoard); // Обновляем состояние доски
+    if (newBoard.length === 8) {
+      this.boardStateSubject.next(newBoard);
     }
   }
-  
+
+  private updateGameTurn(game: GameInfo) {
+    // Обновляем информацию о текущем ходе
+    this.whiteTurn = game.turn === 'w';
+    if(this.whiteTurn) this.userIdService.currentColor = 'White';
+    else this.userIdService.currentColor = 'Black';
+
+    // Сохраняем игру в сервисе GameService
+    this.gameService.updateGame(game);
+
+    // Обновляем пользователя в зависимости от его цвета (белый/черный)
+    if (this.user) {
+      if (this.user.id === game.whitePlayerToken) {
+        this.user.side = 'white';
+      } else if (this.user.id === game.blackPlayerToken) {
+        this.user.side = 'black';
+      }
+    }
+  }
+
+  convertToChessNotation(row: number, col: number): string {
+    const columns = 'abcdefgh';
+    const chessRow = 8 - row;
+    const chessCol = columns[col];
+    return `${chessCol}${chessRow}`;
+  }
 
   ngOnDestroy() {
     this.destroy$.next();

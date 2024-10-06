@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/user';
 import { Game } from '../models/game';
+import { GameInfo } from '../models/gameInfo';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  private currentGameSubject = new BehaviorSubject<Game | null>(null);
+  private currentGameSubject = new BehaviorSubject<GameInfo | null>(null);
   public currentColor: string = 'white'
 
   // Наблюдаемая переменная для текущей игры
@@ -18,17 +19,17 @@ export class GameService {
   }
 
   // Метод для установки текущей игры
-  setGame(game: Game) {
+  setGame(game: GameInfo) {
     this.currentGameSubject.next(game);
   }
 
   // Метод для получения текущей игры
-  getCurrentGame(): Game | null {
+  getCurrentGame(): GameInfo | null {
     return this.currentGameSubject.getValue();
   }
 
   // Метод для обновления игры
-  updateGame(game: Game) {
+  updateGame(game: GameInfo) {
     this.setGame(game);
   }
 }

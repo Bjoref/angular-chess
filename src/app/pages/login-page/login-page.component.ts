@@ -41,27 +41,26 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     private userIdService: UserIdService,
     private chessHttpService: ChessHttpService,
     private gameService: GameService
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.user = this.userService.getCurrentUser();
   }
 
-  registerUser = (): void => {};
-
+  // Старт новой игры
   startNewGame = (): void => {
-    const userId = this.userIdService.currentId.toString();
+    const userId = this.userIdService.getUserId().toString(); // Получаем сохранённый ID пользователя
 
     // Загружаем пользователя по ID и сохраняем в сервисе
     this.userService.loadUserById(userId).subscribe((user) => {
       if (user) {
-        this.gameService.setCurrentColor(user.side);
+        this.gameService.setCurrentColor(user.side); // Устанавливаем сторону игрока
       } else {
         alert('User not found');
       }
     });
 
+    // Регистрация пользователя для игры
     this.chessHttpService
       .registerUser(userId)
       .pipe(takeUntil(this.destroy$))
